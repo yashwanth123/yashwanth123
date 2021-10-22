@@ -1,7 +1,7 @@
 - 👋 Hi, I’m Yashwanth Sai
-- 👀 I’m interested in Data Sicence, Machine Learning and Python.
-- 🌱 I’m currently learning Machine Learning.
-- 💞️ Wanted to Masters in Data Science.
+- 👀 I’m interested in Data Sicence, Machine Learning, Networking and Python.
+- 🌱 I’m currently learning Networking.
+- 💞️ Started Masters in Computer Science at CSUCI.
 - 📫 How to reach me, Just ping me to this mail- yashwanthsai525@gmail.com .
 
 <!---
