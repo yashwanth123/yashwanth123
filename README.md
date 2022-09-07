@@ -1,10 +1,1 @@
-- 👋 Hi, I’m Yashwanth Sai
-- 👀 I’m interested in Data analysis, Internet security, ethical hacking, Networking and Python.
-- 🌱 I’m currently learning internet security, python modules and Kali tools.
-- 💞️ Started Masters in Computer Science at CSUCI.
-- 📫 How to reach me, Just ping me to this mail- yashwanthsai525@gmail.com .
-
-<!---
-yashwanth123/yashwanth123 is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-You can click the Preview link to take a look at your changes.
---->
+I am bilingual can able to speak English, and Telugu currently working as PMO, IEC/ISA 62443 Standards Implementation as a Master's project with a cyber security professor and enrolled in Artificial intelligence, Graduate Seminar and Algorithms at CSUCI. I have Knowledge of Python, Data Analysis, Web Development, Information Security, Blockchain, and Data Science. My hobbies include extracurricular reading, blogging, leadership volunteering, boxing, martial arts and playing chess. I spend most of my free time last year learning about Python Modules, Networking and Cyber Security. I’m very passionate to work with the team. There are countless times when I worked more than 12 hours a day to balance student, work and martial arts life. A highly motivated, driven, passionate and strong person who always wanted to learn in life.
