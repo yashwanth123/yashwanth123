@@ -1,21 +1,31 @@
-➔ Dedicated and results-driven Computer Science Master's graduate with a stellar GPA of 3.7, showcasing a rapid learning pace. Adept in diverse technical domains, including Web Services, Python, Machine Learning Models, Data Visualization, and Rest APIs.
+🚀 Senior Software Engineer | AI/ML Platform Specialist | Cloud-Native Backend Developer
+🔹 I’m a results-driven software engineer with 6+ years of experience designing and deploying production-grade GenAI systems, RAG pipelines, and cloud-native ML platforms across GCP and AWS.
+🔹 I specialize in building scalable microservices using Python, FastAPI, and Kubernetes, and I’ve delivered high-impact AI/ML infrastructure at companies like Capital One, General Motors, and more.
+🔹 I’ve deployed LLM-powered solutions, orchestrated CI/CD pipelines, and worked across real-time systems, backend APIs, and cloud AI integrations — from Vertex AI to Pinecone and Airflow.
 
-➔ Technical Expertise:
-Programming: Proficient in Python, with hands-on experience in developing scalable web applications, implementing RESTful APIs, and conducting comprehensive unit testing and debugging.
+Languages: Python (Expert), SQL, C++, JavaScript, Bash, TypeScript
 
-Frameworks: Skilled in utilizing Python frameworks such as Flask and Django. Demonstrated expertise in leveraging libraries like NumPy, Pandas, and Matplotlib for effective data manipulation and visualization.
+Frameworks: FastAPI, Flask, Django, ReactJS
 
-Object-Oriented Programming (OOP): Experienced in designing and implementing reusable code modules following OOP principles in Python.
+ML/AI Tooling: Vertex AI, SageMaker, Kubeflow, TensorFlow, PyTorch, Scikit-Learn, LangChain, LoRA, FAISS, Pinecone
 
-Development Management: Accomplished track record in overseeing development projects, including ReactJS web applications, Python backends, AWS storage deployment, and integration of Google Cloud APIs. Well-versed in Agile project management methodologies.
+Cloud: GCP (GKE, BigQuery, Cloud Functions), AWS (Lambda, SageMaker, CloudWatch, API Gateway)
 
-➔ Project Highlights:
-RTO's Test Engineer at General Motors: Contributed as a vital member of an on-site team specializing in Real-Time Operating Systems (RTOs) and Android General Motors (GM) dashboard testing. 
-Executed responsibilities encompassing VIP flashing, QFIL content download, and calibration pushing using Tera Term. Utilized ADB connect through IP remote connections to ensure seamless operations. 
-Conducted comprehensive testing of various vehicle components, including doors, windows, child safety locks, lights, traction controls, cameras, fog lights, beam lights, and APIs. Leveraged expertise to send CAN signals, ensuring thorough and precise testing of automotive functionalities.
+Infra & DevOps: Docker, Kubernetes, Terraform, GitHub Actions, Jenkins, Prometheus, Grafana
 
-Team Dynamix Ticketing System (Previous Role - PMO): Served as a Project Management Officer resolving business tickets and generating real-time change reports for university web pages using the Team Dynamix ticketing system. Demonstrated efficiency in managing and streamlining processes to enhance organizational effectiveness.
+Databases: PostgreSQL, MySQL, Redis, MongoDB, Snowflake, Pinecone (Vector DB)
 
-IoT-based Wireless Control Project: Developed a top-graded project centred around IoT-based wireless control for robot networking applications and exhibited extensive expertise in IT and OT technologies with a dedicated focus on security awareness throughout the project lifecycle.
+Other Tools: Jira, Confluence, Lucidchart, Miro, Postman, Airflow, Bitbucket
 
-Software Migration: Successfully orchestrated the migration of projects from legacy to modern systems, ensuring a seamless transition of data and functionality.
+🔸 GenAI Risk Detection Platform – Capital One
+Built and deployed an enterprise-grade RAG system with Llama2/Mistral LLMs, Pinecone vector DB, and FastAPI backend. Integrated with GCP (Vertex AI, GKE, Cloud Monitoring). Enabled real-time fraud detection and scaled to handle high-concurrency use cases using Kubernetes and autoscaling APIs.
+
+🔸 AI-Powered Fleet Health Monitoring – General Motors
+Led development of embedded-to-cloud pipelines for vehicle telemetry. Used Vertex AI, BigQuery, and GKE to process real-time sensor data and trigger predictive maintenance models. Developed robust infrastructure with Terraform, Docker, and CI/CD pipelines.
+
+🔸 Cloud-Native Parking Management – CSUCI
+Delivered a FastAPI/Django-based backend for a smart parking system. Integrated PostgreSQL and OAuth2-based API security. Reduced deployment time by 40% using GitHub Actions and containerized pipelines.
+
+🔸 Full-Stack Financial Analytics – Ezquant
+Built full-stack analytics platforms using Django + React, integrated with BigQuery and 3rd-party financial APIs. Handled 1TB+ of data and improved model accuracy via optimized feature pipelines and API performance.
+
