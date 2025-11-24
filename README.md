@@ -1,13 +1,1 @@
-Senior Software Engineer with experience building AWS-native cloud infrastructure and deploying Generative AI systems at scale. Proven track record delivering solutions across event-driven cloud platforms, LLM-backed applications, and secure data pipelines.
-
-✅ Cloud & Platform Focus:
- • AWS (Lambda, API Gateway, S3, CloudFormation/CDK), Kafka/Confluent
- • Terraform, CI/CD pipelines, serverless architecture, hybrid cloud environments
- • Linux system administration, monitoring (CloudWatch, Prometheus, Grafana)
-
-✅ Generative AI Focus:
- • LLM deployment (OpenAI, Hugging Face, LangChain)
- • Retrieval-Augmented Generation (RAG), multi-agent orchestration
- • Python backend development (FastAPI, Flask), vector DB integrations
-
-I specialize in building resilient, scalable backend systems that combine the power of cloud-native infrastructure with AI/LLM capabilities. 
+I’m a Software Engineer experienced in designing, building, and maintaining reliable, high-performance systems. I’ve worked across the full development lifecycle — from planning and architecture to deployment and monitoring — delivering solutions that are efficient, secure, and easy to scale. I’m comfortable working with modern programming languages, cloud platforms, and data-driven systems, and I enjoy solving complex engineering problems through clean design and collaboration. My focus is always on building products that are maintainable, user-focused, and impactful.Core strengths: software design · APIs &amp; backend services · databases · automation · cloud &amp; DevOps fundamentals · problem solving · cross-team collaborationOpen to: Software Engineer · Backend Engineer · Cloud Engineer · Full-Stack Engineer · Platform Engineer roles
