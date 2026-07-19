@@ -1,5 +1,5 @@
 # 💫 About Me:
-I’m a Software Engineer experienced in designing, building, and maintaining reliable, high-performance systems.  I’ve worked across the full development lifecycle — from planning and architecture to deployment and monitoring —  delivering efficient, secure, and easy-to-scale solutions. <br>I’m comfortable working with modern programming languages,  cloud platforms, and data-driven systems, and  I enjoy solving complex engineering problems through clean design and collaboration.  My focus is always on building products that are maintainable, user-focused, and impactful. <br>
+I’m a Software Engineer experienced in designing, building, and maintaining reliable, high-performance systems.  I’ve worked across the full development lifecycle from planning and architecture to deployment and monitoring, delivering efficient, secure, and easy-to-scale solutions. <br>I’m comfortable working with modern programming languages,  cloud platforms, and data-driven systems, and  I enjoy solving complex engineering problems through clean design and collaboration.  My focus is always on building products that are maintainable, user-focused, and impactful. <br>
 
 
 ## 🌐 Socials:
