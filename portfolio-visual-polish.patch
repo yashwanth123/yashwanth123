@@ -1,0 +1,417 @@
+diff --git a/src/app/globals.css b/src/app/globals.css
+index 84081b7..0abbc38 100644
+--- a/src/app/globals.css
++++ b/src/app/globals.css
+@@ -103,20 +103,23 @@ body {
+   position: absolute;
+   inset: 0;
+   background:
+-    radial-gradient(ellipse 70% 55% at 50% 40%, rgba(8, 145, 178, 0.28), transparent 65%),
+-    radial-gradient(ellipse 40% 35% at 80% 80%, rgba(180, 83, 9, 0.14), transparent 60%),
+-    linear-gradient(160deg, rgba(3, 7, 18, 0.2), rgba(4, 16, 24, 0.55));
++    radial-gradient(ellipse 75% 60% at 50% 42%, rgba(34, 211, 238, 0.42), transparent 62%),
++    radial-gradient(ellipse 45% 40% at 78% 78%, rgba(251, 191, 36, 0.22), transparent 58%),
++    linear-gradient(165deg, #0d2431 0%, #123445 55%, #0b1c28 100%);
+   pointer-events: none;
+ }
+ 
+-.project-card-shade {
++.project-visual-fallback {
+   background:
+-    linear-gradient(
+-      180deg,
+-      rgba(3, 7, 18, 0.15) 0%,
+-      rgba(3, 7, 18, 0.35) 35%,
+-      rgba(3, 7, 18, 0.82) 72%,
+-      rgba(3, 7, 18, 0.94) 100%
+-    );
+-  pointer-events: none;
++    radial-gradient(ellipse 75% 60% at 50% 42%, rgba(34, 211, 238, 0.35), transparent 62%),
++    linear-gradient(165deg, #0d2431 0%, #123445 55%, #0b1c28 100%);
++}
++
++.project-visual-vignette {
++  background:
++    linear-gradient(180deg, rgba(11, 28, 40, 0.05) 0%, rgba(11, 28, 40, 0.15) 70%, rgba(11, 28, 40, 0.55) 100%);
++}
++
++.project-card {
++  min-height: 100%;
+ }
+diff --git a/src/components/ProjectScene.tsx b/src/components/ProjectScene.tsx
+index 3780b4d..e9d48d9 100644
+--- a/src/components/ProjectScene.tsx
++++ b/src/components/ProjectScene.tsx
+@@ -42,11 +42,11 @@ function AgentNodes() {
+       ))}
+       <mesh>
+         <torusGeometry args={[0.55, 0.01, 8, 64]} />
+-        <meshBasicMaterial color="#67e8f9" transparent opacity={0.35} />
++        <meshBasicMaterial color="#67e8f9" transparent opacity={0.7} />
+       </mesh>
+       <mesh rotation={[Math.PI / 2, 0, 0]}>
+-        <torusGeometry args={[0.38, 0.008, 8, 48]} />
+-        <meshBasicMaterial color="#fbbf24" transparent opacity={0.25} />
++        <torusGeometry args={[0.38, 0.01, 8, 48]} />
++        <meshBasicMaterial color="#fbbf24" transparent opacity={0.55} />
+       </mesh>
+     </group>
+   );
+@@ -66,15 +66,15 @@ function OrbitRings() {
+     <group ref={group}>
+       <mesh>
+         <icosahedronGeometry args={[0.22, 0]} />
+-        <meshBasicMaterial color="#22d3ee" wireframe transparent opacity={0.7} />
++        <meshBasicMaterial color="#67e8f9" wireframe transparent opacity={0.95} />
+       </mesh>
+       {[0.4, 0.55, 0.7].map((radius, i) => (
+         <mesh key={radius} rotation={[Math.PI / 2.4, i * 0.4, i * 0.25]}>
+-          <torusGeometry args={[radius, 0.008, 8, 64]} />
++          <torusGeometry args={[radius, 0.012, 8, 64]} />
+           <meshBasicMaterial
+             color={i === 1 ? "#fbbf24" : "#2dd4bf"}
+             transparent
+-            opacity={0.45 - i * 0.08}
++            opacity={0.75 - i * 0.08}
+           />
+         </mesh>
+       ))}
+@@ -124,7 +124,7 @@ function LatticeGrid() {
+         </mesh>
+       ))}
+       <lineSegments geometry={edges}>
+-        <lineBasicMaterial color="#22d3ee" transparent opacity={0.35} />
++        <lineBasicMaterial color="#67e8f9" transparent opacity={0.7} />
+       </lineSegments>
+     </group>
+   );
+@@ -149,11 +149,11 @@ function ScanDisc() {
+     <group ref={group}>
+       <mesh rotation={[-Math.PI / 2, 0, 0]}>
+         <ringGeometry args={[0.25, 0.72, 48]} />
+-        <meshBasicMaterial color="#22d3ee" transparent opacity={0.18} side={THREE.DoubleSide} />
++        <meshBasicMaterial color="#22d3ee" transparent opacity={0.4} side={THREE.DoubleSide} />
+       </mesh>
+       <mesh ref={sweep} rotation={[-Math.PI / 2, 0, 0]}>
+         <ringGeometry args={[0.2, 0.72, 48, 1, 0, Math.PI / 3]} />
+-        <meshBasicMaterial color="#67e8f9" transparent opacity={0.55} side={THREE.DoubleSide} />
++        <meshBasicMaterial color="#a5f3fc" transparent opacity={0.85} side={THREE.DoubleSide} />
+       </mesh>
+       <mesh>
+         <sphereGeometry args={[0.12, 16, 16]} />
+@@ -216,12 +216,12 @@ function NetworkGraph() {
+             count={linePositions.length / 3}
+           />
+         </bufferGeometry>
+-        <lineBasicMaterial color="#22d3ee" transparent opacity={0.45} />
++        <lineBasicMaterial color="#67e8f9" transparent opacity={0.8} />
+       </lineSegments>
+       {nodes.map((n, i) => (
+         <mesh key={i} position={n}>
+-          <sphereGeometry args={[0.05, 10, 10]} />
+-          <meshBasicMaterial color={i === 0 ? "#fbbf24" : "#67e8f9"} />
++          <sphereGeometry args={[0.06, 10, 10]} />
++          <meshBasicMaterial color={i === 0 ? "#fbbf24" : "#a5f3fc"} />
+         </mesh>
+       ))}
+     </group>
+@@ -238,24 +238,24 @@ function PulseWaves() {
+       const scale = 0.4 + ((t * 0.7 + i * 0.35) % 1.4);
+       child.scale.setScalar(scale);
+       const mat = (child as THREE.Mesh).material as THREE.MeshBasicMaterial;
+-      mat.opacity = Math.max(0, 0.55 - scale * 0.28);
++      mat.opacity = Math.max(0, 0.75 - scale * 0.3);
+     });
+   });
+ 
+   return (
+     <group>
+       <mesh>
+-        <sphereGeometry args={[0.14, 16, 16]} />
+-        <meshBasicMaterial color="#2dd4bf" transparent opacity={0.9} />
++        <sphereGeometry args={[0.16, 16, 16]} />
++        <meshBasicMaterial color="#5eead4" transparent opacity={1} />
+       </mesh>
+       <group ref={rings}>
+         {[0, 1, 2].map((i) => (
+           <mesh key={i} rotation={[Math.PI / 2, 0, 0]}>
+-            <ringGeometry args={[0.22, 0.26, 48]} />
++            <ringGeometry args={[0.22, 0.28, 48]} />
+             <meshBasicMaterial
+-              color="#22d3ee"
++              color="#67e8f9"
+               transparent
+-              opacity={0.4}
++              opacity={0.65}
+               side={THREE.DoubleSide}
+             />
+           </mesh>
+@@ -289,10 +289,10 @@ function CoreCrystal() {
+     <group>
+       <mesh ref={mesh}>
+         <octahedronGeometry args={[0.28, 0]} />
+-        <meshBasicMaterial color="#fbbf24" transparent opacity={0.55} wireframe />
++        <meshBasicMaterial color="#fcd34d" transparent opacity={0.9} wireframe />
+       </mesh>
+       <lineSegments ref={shell} geometry={edges}>
+-        <lineBasicMaterial color="#22d3ee" transparent opacity={0.4} />
++        <lineBasicMaterial color="#67e8f9" transparent opacity={0.75} />
+       </lineSegments>
+     </group>
+   );
+@@ -342,10 +342,10 @@ function HelixRibbon() {
+         />
+       </bufferGeometry>
+       <pointsMaterial
+-        size={0.035}
++        size={0.05}
+         vertexColors
+         transparent
+-        opacity={0.95}
++        opacity={1}
+         sizeAttenuation
+         blending={THREE.AdditiveBlending}
+         depthWrite={false}
+@@ -417,18 +417,20 @@ export function ProjectScene({ visual, active = true }: ProjectSceneProps) {
+       <div className="project-visual-glow" />
+       {visible && active ? (
+         <Canvas
+-          camera={{ position: [0, 0, 2.1], fov: 45 }}
+-          dpr={[1, 1.5]}
++          camera={{ position: [0, 0, 1.75], fov: 42 }}
++          dpr={[1, 1.75]}
+           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+           style={{ background: "transparent" }}
+         >
+-          <ambientLight intensity={0.4} />
+-          <pointLight position={[2, 2, 3]} intensity={1.1} color="#22d3ee" />
+-          <pointLight position={[-2, -1, 2]} intensity={0.6} color="#fbbf24" />
+-          <VisualContent visual={visual} />
++          <ambientLight intensity={0.75} />
++          <pointLight position={[2, 2, 3]} intensity={1.8} color="#67e8f9" />
++          <pointLight position={[-2, -1, 2]} intensity={1.1} color="#fbbf24" />
++          <group scale={1.2}>
++            <VisualContent visual={visual} />
++          </group>
+         </Canvas>
+       ) : (
+-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(34,211,238,0.18),transparent_60%)]" />
++        <div className="project-visual-fallback absolute inset-0" />
+       )}
+     </div>
+   );
+diff --git a/src/components/ProjectsSection.tsx b/src/components/ProjectsSection.tsx
+index 5b35fb0..a186a81 100644
+--- a/src/components/ProjectsSection.tsx
++++ b/src/components/ProjectsSection.tsx
+@@ -13,9 +13,7 @@ const ProjectScene = dynamic(
+   () => import("@/components/ProjectScene").then((mod) => mod.ProjectScene),
+   {
+     ssr: false,
+-    loading: () => (
+-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(34,211,238,0.16),transparent_60%)]" />
+-    ),
++    loading: () => <div className="project-visual-fallback absolute inset-0" />,
+   },
+ );
+ 
+@@ -89,81 +87,59 @@ function buildProjects(repos: GitHubRepo[]): {
+   return { featured, more };
+ }
+ 
+-function ProjectCard({
+-  project,
+-  large = false,
+-}: {
+-  project: DisplayProject;
+-  large?: boolean;
+-}) {
++function ProjectCard({ project }: { project: DisplayProject }) {
+   return (
+     <a
+       href={project.href}
+       target="_blank"
+       rel="noopener noreferrer"
+-      className={`group relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#061018]/70 transition-all duration-500 hover:border-cyan-300/30 hover:bg-[#071520]/85 ${
+-        large ? "min-h-[360px] md:min-h-[420px]" : "min-h-[300px]"
+-      }`}
++      className="project-card group flex h-full flex-col overflow-hidden rounded-2xl border border-cyan-200/20 bg-[#0b1c28] transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/45 hover:bg-[#0e2433] hover:shadow-[0_18px_50px_rgba(8,145,178,0.22)]"
+     >
+-      <div className="absolute inset-0 opacity-90 transition-opacity duration-500 group-hover:opacity-100">
++      <div className="relative h-44 w-full shrink-0 overflow-hidden border-b border-white/10 sm:h-48">
+         <ProjectScene visual={project.visual} />
++        <div className="project-visual-vignette pointer-events-none absolute inset-0" />
++        {project.featured && (
++          <span className="absolute top-3 left-3 rounded-full border border-cyan-200/30 bg-[#041018]/70 px-3 py-1 text-[10px] tracking-[0.2em] text-cyan-200 uppercase backdrop-blur-sm">
++            Featured
++          </span>
++        )}
++        <span
++          aria-hidden
++          className="absolute top-3 right-3 text-white/50 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-cyan-200"
++        >
++          ↗
++        </span>
+       </div>
+-      <div className="project-card-shade absolute inset-0" />
+ 
+-      <div className="relative z-10 flex h-full flex-col justify-between p-6 md:p-7">
+-        <div className="flex items-start justify-between gap-3">
+-          <div>
+-            {project.featured && (
+-              <p className="mb-3 text-[10px] tracking-[0.28em] text-cyan-300/70 uppercase">
+-                Featured
+-              </p>
+-            )}
+-            <h3
+-              className={`font-serif text-white transition-colors group-hover:text-cyan-200 ${
+-                large ? "text-2xl md:text-3xl" : "text-xl"
+-              }`}
+-            >
+-              {project.title}
+-            </h3>
+-          </div>
+-          <span
+-            aria-hidden
+-            className="text-white/35 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-cyan-300"
+-          >
+-            ↗
+-          </span>
+-        </div>
++      <div className="flex flex-1 flex-col p-5 md:p-6">
++        <h3 className="font-serif text-xl text-white transition-colors group-hover:text-cyan-100">
++          {project.title}
++        </h3>
+ 
+-        <div>
+-          <p
+-            className={`max-w-md text-sm leading-6 text-white/60 ${
+-              large ? "md:text-[15px] md:leading-7" : "line-clamp-3"
+-            }`}
+-          >
+-            {project.blurb}
+-          </p>
++        <p className="mt-3 line-clamp-3 flex-1 text-sm leading-6 text-white/70">
++          {project.blurb}
++        </p>
+ 
+-          <div className="mt-5 flex flex-wrap items-center gap-2">
+-            {project.tags.map((tag) => (
+-              <span
+-                key={tag}
+-                className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[10px] tracking-[0.14em] text-white/50 uppercase"
+-              >
+-                {tag}
+-              </span>
+-            ))}
+-            {project.language && !project.tags.includes(project.language) && (
+-              <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[10px] tracking-[0.14em] text-white/50 uppercase">
+-                {project.language}
+-              </span>
+-            )}
+-          </div>
++        <div className="mt-5 flex flex-wrap items-center gap-2">
++          {project.tags.slice(0, 3).map((tag) => (
++            <span
++              key={tag}
++              className="rounded-full border border-cyan-100/15 bg-white/5 px-3 py-1 text-[10px] tracking-[0.12em] text-cyan-50/75 uppercase"
++            >
++              {tag}
++            </span>
++          ))}
++          {project.language && !project.tags.includes(project.language) && (
++            <span className="rounded-full border border-cyan-100/15 bg-white/5 px-3 py-1 text-[10px] tracking-[0.12em] text-cyan-50/75 uppercase">
++              {project.language}
++            </span>
++          )}
++        </div>
+ 
+-          <div className="mt-4 flex items-center gap-4 text-[11px] tracking-[0.12em] text-white/35 uppercase">
+-            <span>★ {project.stars}</span>
+-            <span>Forks {project.forks}</span>
+-            {project.liveHref ? <span>Live</span> : null}
+-          </div>
++        <div className="mt-4 flex items-center gap-4 text-[11px] tracking-[0.12em] text-white/45 uppercase">
++          <span>★ {project.stars}</span>
++          <span>Forks {project.forks}</span>
++          {project.liveHref ? <span className="text-cyan-200/80">Live</span> : null}
+         </div>
+       </div>
+     </a>
+@@ -172,7 +148,6 @@ function ProjectCard({
+ 
+ export function ProjectsSection({ repos }: ProjectsSectionProps) {
+   const { featured, more } = buildProjects(repos);
+-  const [primary, ...restFeatured] = featured;
+ 
+   return (
+     <section id="projects" className="relative px-6 py-24 md:px-10 md:py-32">
+@@ -180,45 +155,30 @@ export function ProjectsSection({ repos }: ProjectsSectionProps) {
+       <div className="mx-auto max-w-[1400px]">
+         <div className="mb-14 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+           <div>
+-            <p className="mb-4 text-[11px] tracking-[0.28em] text-white/45 uppercase">
++            <p className="mb-4 text-[11px] tracking-[0.28em] text-cyan-200/70 uppercase">
+               GitHub Projects
+             </p>
+             <h2 className="font-serif text-3xl text-white md:text-4xl">
+               Visual systems from the lab
+             </h2>
+           </div>
+-          <p className="max-w-sm text-sm text-white/45">
++          <p className="max-w-sm text-sm text-white/55">
+             Featured builds with live 3D motifs — synced from GitHub and curated
+             for clarity.
+           </p>
+         </div>
+ 
+         {featured.length === 0 && more.length === 0 ? (
+-          <p className="text-sm text-white/45">
++          <p className="text-sm text-white/55">
+             No public repositories found. Check back soon.
+           </p>
+         ) : (
+           <>
+-            {primary && (
+-              <div className="mb-4 grid gap-4 lg:grid-cols-12">
+-                <div className="lg:col-span-7">
+-                  <ProjectCard project={primary} large />
+-                </div>
+-                <div className="grid gap-4 sm:grid-cols-2 lg:col-span-5 lg:grid-cols-1">
+-                  {restFeatured.slice(0, 2).map((project) => (
+-                    <ProjectCard key={project.key} project={project} />
+-                  ))}
+-                </div>
+-              </div>
+-            )}
+-
+-            {restFeatured.length > 2 && (
+-              <div className="mb-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+-                {restFeatured.slice(2).map((project) => (
+-                  <ProjectCard key={project.key} project={project} />
+-                ))}
+-              </div>
+-            )}
++            <div className="grid auto-rows-fr gap-5 sm:grid-cols-2 xl:grid-cols-3">
++              {featured.map((project) => (
++                <ProjectCard key={project.key} project={project} />
++              ))}
++            </div>
+ 
+             {more.length > 0 && (
+               <div className="mt-16">
+@@ -230,12 +190,12 @@ export function ProjectsSection({ repos }: ProjectsSectionProps) {
+                     href={siteConfig.social.github}
+                     target="_blank"
+                     rel="noopener noreferrer"
+-                    className="text-[11px] tracking-[0.18em] text-white/40 uppercase transition-colors hover:text-cyan-300"
++                    className="text-[11px] tracking-[0.18em] text-white/45 uppercase transition-colors hover:text-cyan-200"
+                   >
+                     View GitHub ↗
+                   </a>
+                 </div>
+-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
++                <div className="grid auto-rows-fr gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                   {more.map((project) => (
+                     <ProjectCard key={project.key} project={project} />
+                   ))}
