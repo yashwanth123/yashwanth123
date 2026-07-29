@@ -1,5 +1,5 @@
 # 💫 About Me:
-I’m a Software Engineer experienced in designing, building, and maintaining reliable, high-performance systems.  I’ve worked across the full development lifecycle from planning and architecture to deployment and monitoring, delivering efficient, secure, and easy-to-scale solutions. <br>I’m comfortable working with modern programming languages,  cloud platforms, and data-driven systems, and  I enjoy solving complex engineering problems through clean design and collaboration.  My focus is always on building products that are maintainable, user-focused, and impactful. <br>
+Software Engineer with 5+ years building production AI systems, data platforms, and full-stack applications on AWS, GCP, and Azure. Deep expertise in LLM/RAG architectures, multi-agent workflows (LangGraph, LangChain), vector search, and MLOps at scale (millions of transactions, 500K+ connected vehicles). MSCS graduate (GPA 3.7) with published-quality research in industrial OT cybersecurity (IEC 62443) and hands-on ML projects in medical imaging (PulmoScan AI). Open-source contributor to mem0, Meta Llama, Judgeval, and LangGraph.  
 
 
 ## 🌐 Socials:
