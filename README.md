@@ -1,5 +1,5 @@
 # 💫 About Me:
-Software Engineer with 5+ years building production AI systems, data platforms, and full-stack applications on AWS, GCP, and Azure. Deep expertise in LLM/RAG architectures, multi-agent workflows (LangGraph, LangChain), vector search, and MLOps at scale (millions of transactions, 500K+ connected vehicles). MSCS graduate (GPA 3.7) with published-quality research in industrial OT cybersecurity (IEC 62443) and hands-on ML projects in medical imaging (PulmoScan AI). Open-source contributor to mem0, Meta Llama, Judgeval, and LangGraph.  
+Software Engineer building production AI systems, data platforms, and full-stack applications on AWS, GCP, and Azure. Deep expertise in LLM/RAG architectures, multi-agent workflows (LangGraph, LangChain), vector search, and MLOps at scale (millions of transactions, 500K+ connected vehicles). CS Graduate with published-quality research in industrial OT cybersecurity (IEC 62443) and hands-on ML projects in medical imaging (PulmoScan AI). Open-source contributor to mem0, Meta Llama, Judgeval, and LangGraph.  
 
 
 ## 🌐 Socials:
