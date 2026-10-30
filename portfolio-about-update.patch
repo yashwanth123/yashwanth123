@@ -1,0 +1,16 @@
+diff --git a/src/lib/site-config.ts b/src/lib/site-config.ts
+index 2b8de3b..d51373e 100644
+--- a/src/lib/site-config.ts
++++ b/src/lib/site-config.ts
+@@ -84,9 +84,9 @@ export const siteConfig = {
+   about: {
+     title: "Engineering intelligent systems that ship to production.",
+     paragraphs: [
+-      "I'm a Software Engineer with 5+ years of experience building and deploying LLM-powered applications, RAG pipelines, and agentic workflows at scale. I've shipped GenAI systems across healthcare, finance, and automotive — from 4M+ document retrieval pipelines at Blue Cross Blue Shield to fraud-detection agents processing 3M+ daily transactions at Capital One.",
++      "I'm a Software Engineer with 5+ years of experience building and deploying LLM-powered applications, RAG pipelines, and agentic workflows at scale. I've shipped GenAI systems in automotive at General Motors — focusing on production retrieval, evaluation, and multi-agent workflows that hold up beyond demos.",
+       "My core stack spans LangChain, LangGraph, vector databases (Pinecone, pgvector), and LLM APIs from OpenAI, Anthropic, and Gemini. I care deeply about evaluation frameworks, cost optimization, guardrails, and MLOps — not just prototypes that demo well, but systems that hold up in production.",
+-      "MS in Computer Science from California State University Channel Islands. Open-source contributor to Judgeval (Stanford/Judgment Labs). Builder of Job Agent AI — a full-stack platform for AI-powered job search.",
++      "MS in Computer Science from California State University Channel Islands. Open-source contributor across agent infrastructure and eval tooling — including Judgeval (Stanford/Judgment Labs), LangGraph, Mem0, and Llama inference experiments — and builder of projects like Job Agent AI, PulmoScan AI, Military Docs RAG, Spark Dating, and IoT Bot.",
+     ],
+     skills: [
+       "LangChain & LangGraph",

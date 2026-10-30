@@ -1,0 +1,949 @@
+diff --git a/README.md b/README.md
+index b6fc56a..ed2f735 100644
+--- a/README.md
++++ b/README.md
+@@ -7,6 +7,7 @@ A dark, cinematic portfolio inspired by [Ricardo Chance](https://ricardochance.c
+ - Full-screen hero with interactive 3D particle star (mouse-responsive)
+ - Minimal navigation with corner frame accents
+ - About, GitHub Projects, Blog, and Contact sections
++- Featured GitHub projects with live 3D React Three Fiber visuals
+ - GitHub repos fetched from the API (revalidated hourly)
+ - Fully responsive layout
+ - Vercel-ready deployment
+@@ -22,9 +23,7 @@ Open [http://localhost:3000](http://localhost:3000).
+ 
+ ## Customize
+ 
+-Edit `src/lib/site-config.ts` for your name, copy, email, and social links.
+-
+-Replace `public/resume.pdf` with your actual resume PDF.
++Edit `src/lib/site-config.ts` for your name, copy, email, social links, and featured project list.
+ 
+ ## Environment Variables
+ 
+diff --git a/src/app/globals.css b/src/app/globals.css
+index a88f0c7..84081b7 100644
+--- a/src/app/globals.css
++++ b/src/app/globals.css
+@@ -94,3 +94,29 @@ body {
+ .animate-fade-up-delay-3 {
+   animation: fade-up 0.9s ease-out 0.45s both;
+ }
++
++.project-visual {
++  isolation: isolate;
++}
++
++.project-visual-glow {
++  position: absolute;
++  inset: 0;
++  background:
++    radial-gradient(ellipse 70% 55% at 50% 40%, rgba(8, 145, 178, 0.28), transparent 65%),
++    radial-gradient(ellipse 40% 35% at 80% 80%, rgba(180, 83, 9, 0.14), transparent 60%),
++    linear-gradient(160deg, rgba(3, 7, 18, 0.2), rgba(4, 16, 24, 0.55));
++  pointer-events: none;
++}
++
++.project-card-shade {
++  background:
++    linear-gradient(
++      180deg,
++      rgba(3, 7, 18, 0.15) 0%,
++      rgba(3, 7, 18, 0.35) 35%,
++      rgba(3, 7, 18, 0.82) 72%,
++      rgba(3, 7, 18, 0.94) 100%
++    );
++  pointer-events: none;
++}
+diff --git a/src/components/ContactSection.tsx b/src/components/ContactSection.tsx
+index 452632e..1446fe4 100644
+--- a/src/components/ContactSection.tsx
++++ b/src/components/ContactSection.tsx
+@@ -39,8 +39,8 @@ export function ContactSection() {
+               <GhostButton href={siteConfig.social.linkedin} external>
+                 LinkedIn
+               </GhostButton>
+-              <GhostButton href={siteConfig.resumePath} external>
+-                Resume
++              <GhostButton href="#projects" variant="secondary">
++                Projects
+               </GhostButton>
+             </div>
+           </div>
+diff --git a/src/components/Hero.tsx b/src/components/Hero.tsx
+index faad4ca..739cc63 100644
+--- a/src/components/Hero.tsx
++++ b/src/components/Hero.tsx
+@@ -47,11 +47,11 @@ export function Hero() {
+             </div>
+ 
+             <div className="animate-fade-up-delay-2 flex flex-col gap-4 sm:flex-row sm:items-center">
+-              <GhostButton href={siteConfig.resumePath} external>
+-                View My Resume
++              <GhostButton href="#projects">
++                Explore Projects
+               </GhostButton>
+-              <GhostButton href="#projects" variant="secondary">
+-                GitHub Projects
++              <GhostButton href={siteConfig.social.github} external variant="secondary">
++                GitHub
+               </GhostButton>
+             </div>
+           </div>
+diff --git a/src/components/ProjectScene.tsx b/src/components/ProjectScene.tsx
+new file mode 100644
+index 0000000..3780b4d
+--- /dev/null
++++ b/src/components/ProjectScene.tsx
+@@ -0,0 +1,435 @@
++"use client";
++
++import { useEffect, useMemo, useRef, useState } from "react";
++import { Canvas, useFrame } from "@react-three/fiber";
++import * as THREE from "three";
++import type { ProjectVisual } from "@/lib/site-config";
++
++type ProjectSceneProps = {
++  visual: ProjectVisual;
++  active?: boolean;
++};
++
++function AgentNodes() {
++  const group = useRef<THREE.Group>(null);
++  const nodes = useMemo(() => {
++    return Array.from({ length: 8 }, (_, i) => {
++      const angle = (i / 8) * Math.PI * 2;
++      return new THREE.Vector3(Math.cos(angle) * 0.55, Math.sin(angle) * 0.35, Math.sin(angle * 2) * 0.2);
++    });
++  }, []);
++
++  useFrame((state) => {
++    if (!group.current) return;
++    const t = state.clock.elapsedTime;
++    group.current.rotation.y = t * 0.35;
++    group.current.rotation.x = Math.sin(t * 0.4) * 0.15;
++  });
++
++  return (
++    <group ref={group}>
++      {nodes.map((pos, i) => (
++        <mesh key={i} position={pos}>
++          <sphereGeometry args={[0.06, 12, 12]} />
++          <meshBasicMaterial
++            color={i % 2 === 0 ? "#22d3ee" : "#fbbf24"}
++            transparent
++            opacity={0.9}
++            blending={THREE.AdditiveBlending}
++            depthWrite={false}
++          />
++        </mesh>
++      ))}
++      <mesh>
++        <torusGeometry args={[0.55, 0.01, 8, 64]} />
++        <meshBasicMaterial color="#67e8f9" transparent opacity={0.35} />
++      </mesh>
++      <mesh rotation={[Math.PI / 2, 0, 0]}>
++        <torusGeometry args={[0.38, 0.008, 8, 48]} />
++        <meshBasicMaterial color="#fbbf24" transparent opacity={0.25} />
++      </mesh>
++    </group>
++  );
++}
++
++function OrbitRings() {
++  const group = useRef<THREE.Group>(null);
++
++  useFrame((state) => {
++    if (!group.current) return;
++    const t = state.clock.elapsedTime;
++    group.current.rotation.y = t * 0.45;
++    group.current.rotation.z = t * 0.12;
++  });
++
++  return (
++    <group ref={group}>
++      <mesh>
++        <icosahedronGeometry args={[0.22, 0]} />
++        <meshBasicMaterial color="#22d3ee" wireframe transparent opacity={0.7} />
++      </mesh>
++      {[0.4, 0.55, 0.7].map((radius, i) => (
++        <mesh key={radius} rotation={[Math.PI / 2.4, i * 0.4, i * 0.25]}>
++          <torusGeometry args={[radius, 0.008, 8, 64]} />
++          <meshBasicMaterial
++            color={i === 1 ? "#fbbf24" : "#2dd4bf"}
++            transparent
++            opacity={0.45 - i * 0.08}
++          />
++        </mesh>
++      ))}
++      <mesh position={[0.7, 0, 0]}>
++        <sphereGeometry args={[0.045, 12, 12]} />
++        <meshBasicMaterial color="#fbbf24" />
++      </mesh>
++    </group>
++  );
++}
++
++function LatticeGrid() {
++  const group = useRef<THREE.Group>(null);
++  const points = useMemo(() => {
++    const arr: THREE.Vector3[] = [];
++    for (let x = -1; x <= 1; x += 1) {
++      for (let y = -1; y <= 1; y += 1) {
++        for (let z = -1; z <= 1; z += 1) {
++          arr.push(new THREE.Vector3(x * 0.28, y * 0.28, z * 0.28));
++        }
++      }
++    }
++    return arr;
++  }, []);
++  const edges = useMemo(
++    () => new THREE.EdgesGeometry(new THREE.BoxGeometry(0.56, 0.56, 0.56)),
++    [],
++  );
++
++  useFrame((state) => {
++    if (!group.current) return;
++    const t = state.clock.elapsedTime;
++    group.current.rotation.x = t * 0.25;
++    group.current.rotation.y = t * 0.4;
++  });
++
++  return (
++    <group ref={group}>
++      {points.map((p, i) => (
++        <mesh key={i} position={p}>
++          <boxGeometry args={[0.05, 0.05, 0.05]} />
++          <meshBasicMaterial
++            color={i % 3 === 0 ? "#22d3ee" : "#67e8f9"}
++            transparent
++            opacity={0.75}
++          />
++        </mesh>
++      ))}
++      <lineSegments geometry={edges}>
++        <lineBasicMaterial color="#22d3ee" transparent opacity={0.35} />
++      </lineSegments>
++    </group>
++  );
++}
++
++function ScanDisc() {
++  const group = useRef<THREE.Group>(null);
++  const sweep = useRef<THREE.Mesh>(null);
++
++  useFrame((state) => {
++    const t = state.clock.elapsedTime;
++    if (group.current) {
++      group.current.rotation.x = -0.55;
++      group.current.rotation.z = Math.sin(t * 0.3) * 0.08;
++    }
++    if (sweep.current) {
++      sweep.current.rotation.z = t * 1.4;
++    }
++  });
++
++  return (
++    <group ref={group}>
++      <mesh rotation={[-Math.PI / 2, 0, 0]}>
++        <ringGeometry args={[0.25, 0.72, 48]} />
++        <meshBasicMaterial color="#22d3ee" transparent opacity={0.18} side={THREE.DoubleSide} />
++      </mesh>
++      <mesh ref={sweep} rotation={[-Math.PI / 2, 0, 0]}>
++        <ringGeometry args={[0.2, 0.72, 48, 1, 0, Math.PI / 3]} />
++        <meshBasicMaterial color="#67e8f9" transparent opacity={0.55} side={THREE.DoubleSide} />
++      </mesh>
++      <mesh>
++        <sphereGeometry args={[0.12, 16, 16]} />
++        <meshBasicMaterial color="#fbbf24" transparent opacity={0.85} />
++      </mesh>
++    </group>
++  );
++}
++
++function NetworkGraph() {
++  const group = useRef<THREE.Group>(null);
++  const nodes = useMemo(() => {
++    return [
++      [0, 0.35, 0],
++      [-0.45, -0.1, 0.2],
++      [0.45, -0.05, 0.15],
++      [-0.2, -0.4, -0.15],
++      [0.25, -0.35, -0.2],
++      [0, 0.05, -0.4],
++    ].map((p) => new THREE.Vector3(...p));
++  }, []);
++
++  const linePositions = useMemo(() => {
++    const pairs = [
++      [0, 1],
++      [0, 2],
++      [0, 5],
++      [1, 3],
++      [2, 4],
++      [3, 4],
++      [1, 5],
++      [2, 5],
++    ];
++    const arr = new Float32Array(pairs.length * 6);
++    pairs.forEach(([a, b], i) => {
++      arr[i * 6] = nodes[a].x;
++      arr[i * 6 + 1] = nodes[a].y;
++      arr[i * 6 + 2] = nodes[a].z;
++      arr[i * 6 + 3] = nodes[b].x;
++      arr[i * 6 + 4] = nodes[b].y;
++      arr[i * 6 + 5] = nodes[b].z;
++    });
++    return arr;
++  }, [nodes]);
++
++  useFrame((state) => {
++    if (!group.current) return;
++    const t = state.clock.elapsedTime;
++    group.current.rotation.y = t * 0.3;
++    group.current.rotation.x = Math.sin(t * 0.5) * 0.2;
++  });
++
++  return (
++    <group ref={group}>
++      <lineSegments>
++        <bufferGeometry>
++          <bufferAttribute
++            attach="attributes-position"
++            args={[linePositions, 3]}
++            count={linePositions.length / 3}
++          />
++        </bufferGeometry>
++        <lineBasicMaterial color="#22d3ee" transparent opacity={0.45} />
++      </lineSegments>
++      {nodes.map((n, i) => (
++        <mesh key={i} position={n}>
++          <sphereGeometry args={[0.05, 10, 10]} />
++          <meshBasicMaterial color={i === 0 ? "#fbbf24" : "#67e8f9"} />
++        </mesh>
++      ))}
++    </group>
++  );
++}
++
++function PulseWaves() {
++  const rings = useRef<THREE.Group>(null);
++
++  useFrame((state) => {
++    if (!rings.current) return;
++    const t = state.clock.elapsedTime;
++    rings.current.children.forEach((child, i) => {
++      const scale = 0.4 + ((t * 0.7 + i * 0.35) % 1.4);
++      child.scale.setScalar(scale);
++      const mat = (child as THREE.Mesh).material as THREE.MeshBasicMaterial;
++      mat.opacity = Math.max(0, 0.55 - scale * 0.28);
++    });
++  });
++
++  return (
++    <group>
++      <mesh>
++        <sphereGeometry args={[0.14, 16, 16]} />
++        <meshBasicMaterial color="#2dd4bf" transparent opacity={0.9} />
++      </mesh>
++      <group ref={rings}>
++        {[0, 1, 2].map((i) => (
++          <mesh key={i} rotation={[Math.PI / 2, 0, 0]}>
++            <ringGeometry args={[0.22, 0.26, 48]} />
++            <meshBasicMaterial
++              color="#22d3ee"
++              transparent
++              opacity={0.4}
++              side={THREE.DoubleSide}
++            />
++          </mesh>
++        ))}
++      </group>
++    </group>
++  );
++}
++
++function CoreCrystal() {
++  const mesh = useRef<THREE.Mesh>(null);
++  const shell = useRef<THREE.LineSegments>(null);
++
++  useFrame((state) => {
++    const t = state.clock.elapsedTime;
++    if (mesh.current) {
++      mesh.current.rotation.x = t * 0.35;
++      mesh.current.rotation.y = t * 0.55;
++      const pulse = 1 + Math.sin(t * 2) * 0.06;
++      mesh.current.scale.setScalar(pulse);
++    }
++    if (shell.current) {
++      shell.current.rotation.x = -t * 0.2;
++      shell.current.rotation.y = t * 0.3;
++    }
++  });
++
++  const edges = useMemo(() => new THREE.EdgesGeometry(new THREE.OctahedronGeometry(0.55, 0)), []);
++
++  return (
++    <group>
++      <mesh ref={mesh}>
++        <octahedronGeometry args={[0.28, 0]} />
++        <meshBasicMaterial color="#fbbf24" transparent opacity={0.55} wireframe />
++      </mesh>
++      <lineSegments ref={shell} geometry={edges}>
++        <lineBasicMaterial color="#22d3ee" transparent opacity={0.4} />
++      </lineSegments>
++    </group>
++  );
++}
++
++function HelixRibbon() {
++  const pointsRef = useRef<THREE.Points>(null);
++  const { positions, colors } = useMemo(() => {
++    const count = 220;
++    const positions = new Float32Array(count * 3);
++    const colors = new Float32Array(count * 3);
++    const c1 = new THREE.Color("#22d3ee");
++    const c2 = new THREE.Color("#fbbf24");
++
++    for (let i = 0; i < count; i += 1) {
++      const t = i / count;
++      const angle = t * Math.PI * 6;
++      positions[i * 3] = Math.cos(angle) * 0.35;
++      positions[i * 3 + 1] = (t - 0.5) * 1.2;
++      positions[i * 3 + 2] = Math.sin(angle) * 0.35;
++      const color = c1.clone().lerp(c2, t);
++      colors[i * 3] = color.r;
++      colors[i * 3 + 1] = color.g;
++      colors[i * 3 + 2] = color.b;
++    }
++
++    return { positions, colors };
++  }, []);
++
++  useFrame((state) => {
++    if (!pointsRef.current) return;
++    pointsRef.current.rotation.y = state.clock.elapsedTime * 0.5;
++  });
++
++  return (
++    <points ref={pointsRef}>
++      <bufferGeometry>
++        <bufferAttribute
++          attach="attributes-position"
++          args={[positions, 3]}
++          count={positions.length / 3}
++        />
++        <bufferAttribute
++          attach="attributes-color"
++          args={[colors, 3]}
++          count={colors.length / 3}
++        />
++      </bufferGeometry>
++      <pointsMaterial
++        size={0.035}
++        vertexColors
++        transparent
++        opacity={0.95}
++        sizeAttenuation
++        blending={THREE.AdditiveBlending}
++        depthWrite={false}
++      />
++    </points>
++  );
++}
++
++function VisualContent({ visual }: { visual: ProjectVisual }) {
++  switch (visual) {
++    case "agent":
++      return <AgentNodes />;
++    case "orbit":
++      return <OrbitRings />;
++    case "lattice":
++      return <LatticeGrid />;
++    case "scan":
++      return <ScanDisc />;
++    case "network":
++      return <NetworkGraph />;
++    case "pulse":
++      return <PulseWaves />;
++    case "helix":
++      return <HelixRibbon />;
++    case "core":
++    default:
++      return <CoreCrystal />;
++  }
++}
++
++const VISUAL_CYCLE: ProjectVisual[] = [
++  "agent",
++  "orbit",
++  "lattice",
++  "scan",
++  "network",
++  "pulse",
++  "core",
++  "helix",
++];
++
++export function visualFromName(name: string): ProjectVisual {
++  let hash = 0;
++  for (let i = 0; i < name.length; i += 1) {
++    hash = (hash + name.charCodeAt(i) * (i + 1)) % VISUAL_CYCLE.length;
++  }
++  return VISUAL_CYCLE[hash];
++}
++
++export function ProjectScene({ visual, active = true }: ProjectSceneProps) {
++  const containerRef = useRef<HTMLDivElement>(null);
++  const [visible, setVisible] = useState(false);
++
++  useEffect(() => {
++    const el = containerRef.current;
++    if (!el) return;
++
++    const observer = new IntersectionObserver(
++      ([entry]) => setVisible(entry.isIntersecting),
++      { rootMargin: "120px", threshold: 0.1 },
++    );
++
++    observer.observe(el);
++    return () => observer.disconnect();
++  }, []);
++
++  return (
++    <div ref={containerRef} className="project-visual absolute inset-0" aria-hidden>
++      <div className="project-visual-glow" />
++      {visible && active ? (
++        <Canvas
++          camera={{ position: [0, 0, 2.1], fov: 45 }}
++          dpr={[1, 1.5]}
++          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
++          style={{ background: "transparent" }}
++        >
++          <ambientLight intensity={0.4} />
++          <pointLight position={[2, 2, 3]} intensity={1.1} color="#22d3ee" />
++          <pointLight position={[-2, -1, 2]} intensity={0.6} color="#fbbf24" />
++          <VisualContent visual={visual} />
++        </Canvas>
++      ) : (
++        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(34,211,238,0.18),transparent_60%)]" />
++      )}
++    </div>
++  );
++}
+diff --git a/src/components/ProjectsSection.tsx b/src/components/ProjectsSection.tsx
+index cc4b3cd..5b35fb0 100644
+--- a/src/components/ProjectsSection.tsx
++++ b/src/components/ProjectsSection.tsx
+@@ -1,10 +1,179 @@
++"use client";
++
++import dynamic from "next/dynamic";
+ import type { GitHubRepo } from "@/lib/github";
++import {
++  siteConfig,
++  type FeaturedProject,
++  type ProjectVisual,
++} from "@/lib/site-config";
++import { visualFromName } from "@/components/ProjectScene";
++
++const ProjectScene = dynamic(
++  () => import("@/components/ProjectScene").then((mod) => mod.ProjectScene),
++  {
++    ssr: false,
++    loading: () => (
++      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(34,211,238,0.16),transparent_60%)]" />
++    ),
++  },
++);
+ 
+ type ProjectsSectionProps = {
+   repos: GitHubRepo[];
+ };
+ 
++type DisplayProject = {
++  key: string;
++  title: string;
++  blurb: string;
++  href: string;
++  liveHref?: string | null;
++  language: string | null;
++  stars: number;
++  forks: number;
++  visual: ProjectVisual;
++  tags: string[];
++  featured: boolean;
++};
++
++function buildProjects(repos: GitHubRepo[]): {
++  featured: DisplayProject[];
++  more: DisplayProject[];
++} {
++  const byName = new Map(repos.map((repo) => [repo.name, repo]));
++  const featuredNames = new Set(
++    siteConfig.featuredProjects.map((project) => project.repo),
++  );
++
++  const featured: DisplayProject[] = siteConfig.featuredProjects.map(
++    (project: FeaturedProject) => {
++      const repo = byName.get(project.repo);
++      return {
++        key: project.repo,
++        title: project.title,
++        blurb: project.blurb,
++        href:
++          project.href ||
++          repo?.html_url ||
++          `https://github.com/${siteConfig.githubUsername}/${project.repo}`,
++        liveHref: repo?.homepage,
++        language: repo?.language ?? project.tags[0] ?? null,
++        stars: repo?.stargazers_count ?? 0,
++        forks: repo?.forks_count ?? 0,
++        visual: project.visual,
++        tags: [...project.tags],
++        featured: true,
++      };
++    },
++  );
++
++  const more = repos
++    .filter((repo) => !featuredNames.has(repo.name))
++    .filter((repo) => repo.name !== siteConfig.githubUsername)
++    .filter((repo) => repo.name !== "yashwanth-portfolio")
++    .map((repo) => ({
++      key: repo.name,
++      title: repo.name,
++      blurb: repo.description || "Exploration and experiments from the GitHub lab.",
++      href: repo.html_url,
++      liveHref: repo.homepage,
++      language: repo.language,
++      stars: repo.stargazers_count,
++      forks: repo.forks_count,
++      visual: visualFromName(repo.name),
++      tags: repo.topics.slice(0, 3),
++      featured: false,
++    }));
++
++  return { featured, more };
++}
++
++function ProjectCard({
++  project,
++  large = false,
++}: {
++  project: DisplayProject;
++  large?: boolean;
++}) {
++  return (
++    <a
++      href={project.href}
++      target="_blank"
++      rel="noopener noreferrer"
++      className={`group relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#061018]/70 transition-all duration-500 hover:border-cyan-300/30 hover:bg-[#071520]/85 ${
++        large ? "min-h-[360px] md:min-h-[420px]" : "min-h-[300px]"
++      }`}
++    >
++      <div className="absolute inset-0 opacity-90 transition-opacity duration-500 group-hover:opacity-100">
++        <ProjectScene visual={project.visual} />
++      </div>
++      <div className="project-card-shade absolute inset-0" />
++
++      <div className="relative z-10 flex h-full flex-col justify-between p-6 md:p-7">
++        <div className="flex items-start justify-between gap-3">
++          <div>
++            {project.featured && (
++              <p className="mb-3 text-[10px] tracking-[0.28em] text-cyan-300/70 uppercase">
++                Featured
++              </p>
++            )}
++            <h3
++              className={`font-serif text-white transition-colors group-hover:text-cyan-200 ${
++                large ? "text-2xl md:text-3xl" : "text-xl"
++              }`}
++            >
++              {project.title}
++            </h3>
++          </div>
++          <span
++            aria-hidden
++            className="text-white/35 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-cyan-300"
++          >
++            ↗
++          </span>
++        </div>
++
++        <div>
++          <p
++            className={`max-w-md text-sm leading-6 text-white/60 ${
++              large ? "md:text-[15px] md:leading-7" : "line-clamp-3"
++            }`}
++          >
++            {project.blurb}
++          </p>
++
++          <div className="mt-5 flex flex-wrap items-center gap-2">
++            {project.tags.map((tag) => (
++              <span
++                key={tag}
++                className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[10px] tracking-[0.14em] text-white/50 uppercase"
++              >
++                {tag}
++              </span>
++            ))}
++            {project.language && !project.tags.includes(project.language) && (
++              <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[10px] tracking-[0.14em] text-white/50 uppercase">
++                {project.language}
++              </span>
++            )}
++          </div>
++
++          <div className="mt-4 flex items-center gap-4 text-[11px] tracking-[0.12em] text-white/35 uppercase">
++            <span>★ {project.stars}</span>
++            <span>Forks {project.forks}</span>
++            {project.liveHref ? <span>Live</span> : null}
++          </div>
++        </div>
++      </div>
++    </a>
++  );
++}
++
+ export function ProjectsSection({ repos }: ProjectsSectionProps) {
++  const { featured, more } = buildProjects(repos);
++  const [primary, ...restFeatured] = featured;
++
+   return (
+     <section id="projects" className="relative px-6 py-24 md:px-10 md:py-32">
+       <div className="section-divider mx-auto mb-20 max-w-[1400px]" />
+@@ -15,58 +184,65 @@ export function ProjectsSection({ repos }: ProjectsSectionProps) {
+               GitHub Projects
+             </p>
+             <h2 className="font-serif text-3xl text-white md:text-4xl">
+-              All repositories
++              Visual systems from the lab
+             </h2>
+           </div>
+           <p className="max-w-sm text-sm text-white/45">
+-            All public repositories from GitHub, sorted by last updated.
++            Featured builds with live 3D motifs — synced from GitHub and curated
++            for clarity.
+           </p>
+         </div>
+ 
+-        {repos.length === 0 ? (
++        {featured.length === 0 && more.length === 0 ? (
+           <p className="text-sm text-white/45">
+             No public repositories found. Check back soon.
+           </p>
+         ) : (
+-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+-            {repos.map((repo) => (
+-              <a
+-                key={repo.id}
+-                href={repo.html_url}
+-                target="_blank"
+-                rel="noopener noreferrer"
+-                className="group flex flex-col justify-between rounded-2xl border border-white/8 bg-white/[0.02] p-6 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.04]"
+-              >
+-                <div>
+-                  <div className="mb-4 flex items-start justify-between gap-3">
+-                    <h3 className="font-medium text-white transition-colors group-hover:text-cyan-300">
+-                      {repo.name}
+-                      {repo.fork && (
+-                        <span className="ml-2 text-[10px] tracking-[0.12em] text-white/30 uppercase">
+-                          Fork
+-                        </span>
+-                      )}
+-                    </h3>
+-                    <span
+-                      aria-hidden
+-                      className="text-white/30 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+-                    >
+-                      ↗
+-                    </span>
+-                  </div>
+-                  <p className="line-clamp-3 text-sm leading-6 text-white/45">
+-                    {repo.description || "No description provided."}
+-                  </p>
++          <>
++            {primary && (
++              <div className="mb-4 grid gap-4 lg:grid-cols-12">
++                <div className="lg:col-span-7">
++                  <ProjectCard project={primary} large />
++                </div>
++                <div className="grid gap-4 sm:grid-cols-2 lg:col-span-5 lg:grid-cols-1">
++                  {restFeatured.slice(0, 2).map((project) => (
++                    <ProjectCard key={project.key} project={project} />
++                  ))}
+                 </div>
++              </div>
++            )}
+ 
+-                <div className="mt-6 flex items-center gap-4 text-[11px] tracking-[0.1em] text-white/35 uppercase">
+-                  {repo.language && <span>{repo.language}</span>}
+-                  <span>★ {repo.stargazers_count}</span>
+-                  <span>Forks {repo.forks_count}</span>
++            {restFeatured.length > 2 && (
++              <div className="mb-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
++                {restFeatured.slice(2).map((project) => (
++                  <ProjectCard key={project.key} project={project} />
++                ))}
++              </div>
++            )}
++
++            {more.length > 0 && (
++              <div className="mt-16">
++                <div className="mb-8 flex items-end justify-between gap-4">
++                  <h3 className="font-serif text-2xl text-white/90">
++                    More repositories
++                  </h3>
++                  <a
++                    href={siteConfig.social.github}
++                    target="_blank"
++                    rel="noopener noreferrer"
++                    className="text-[11px] tracking-[0.18em] text-white/40 uppercase transition-colors hover:text-cyan-300"
++                  >
++                    View GitHub ↗
++                  </a>
+                 </div>
+-              </a>
+-            ))}
+-          </div>
++                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
++                  {more.map((project) => (
++                    <ProjectCard key={project.key} project={project} />
++                  ))}
++                </div>
++              </div>
++            )}
++          </>
+         )}
+       </div>
+     </section>
+diff --git a/src/lib/github.ts b/src/lib/github.ts
+index e680048..10ff4d4 100644
+--- a/src/lib/github.ts
++++ b/src/lib/github.ts
+@@ -55,8 +55,14 @@ export async function fetchGitHubRepos(
+     page += 1;
+   }
+ 
++  const excluded = new Set([
++    username,
++    `${username}.github`,
++    `${username}.github.io`,
++  ]);
++
+   return repos
+-    .filter((repo) => repo.name !== `${username}.github`)
++    .filter((repo) => !excluded.has(repo.name))
+     .sort(
+       (a, b) =>
+         new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+diff --git a/src/lib/site-config.ts b/src/lib/site-config.ts
+index 0dd6fa6..df25ca7 100644
+--- a/src/lib/site-config.ts
++++ b/src/lib/site-config.ts
+@@ -1,3 +1,22 @@
++export type ProjectVisual =
++  | "agent"
++  | "orbit"
++  | "lattice"
++  | "scan"
++  | "network"
++  | "pulse"
++  | "core"
++  | "helix";
++
++export type FeaturedProject = {
++  repo: string;
++  title: string;
++  blurb: string;
++  visual: ProjectVisual;
++  tags: string[];
++  href?: string;
++};
++
+ export const siteConfig = {
+   name: "Yashwanth Sai T",
+   role: "SOFTWARE ENGINEER · GENAI & AGENTIC SYSTEMS",
+@@ -6,13 +25,78 @@ export const siteConfig = {
+   heroDescription:
+     "Software Engineer with 5+ years building LLM-powered applications, RAG pipelines, and multi-agent systems — productionized on AWS, GCP, and Azure.",
+   githubUsername: "yashwanth123",
+-  resumePath: "/resume.pdf",
+   email: "yashwanthsi2011@gmail.com",
+   phone: "(213) 451-1130",
+   social: {
+     github: "https://github.com/yashwanth123",
+     linkedin: "https://www.linkedin.com/in/yashwanthsai-t",
+   },
++  featuredProjects: [
++    {
++      repo: "job-agent-ai",
++      title: "Job Agent AI",
++      blurb:
++        "Full-stack AI job-search agent — matching, outreach drafting, and end-to-end workflow automation.",
++      visual: "agent",
++      tags: ["Python", "Agents", "LangChain"],
++    },
++    {
++      repo: "spark-dating",
++      title: "Spark Dating",
++      blurb:
++        "Real-time dating product UI with expressive motion and TypeScript-first architecture.",
++      visual: "orbit",
++      tags: ["TypeScript", "Next.js", "Realtime"],
++    },
++    {
++      repo: "miltarydocs_rag",
++      title: "Military Docs RAG",
++      blurb:
++        "Retrieval-augmented generation over dense document corpora with grounded citations.",
++      visual: "lattice",
++      tags: ["Python", "RAG", "Vector DB"],
++    },
++    {
++      repo: "PulmoScan-AI",
++      title: "PulmoScan AI",
++      blurb:
++        "AI-assisted pulmonary imaging analysis for clinical decision support workflows.",
++      visual: "scan",
++      tags: ["Python", "Vision", "Healthcare"],
++    },
++    {
++      repo: "CyberSecurity-graduate-research-work-",
++      title: "Cybersecurity Research",
++      blurb:
++        "Graduate research tooling and experiments in threat analysis and secure systems.",
++      visual: "network",
++      tags: ["TypeScript", "Security", "Research"],
++    },
++    {
++      repo: "IOT_bot",
++      title: "IoT Bot",
++      blurb:
++        "IoT automation bot for device telemetry, control loops, and edge workflows.",
++      visual: "pulse",
++      tags: ["Python", "IoT", "Automation"],
++    },
++    {
++      repo: "mem0-eval",
++      title: "Mem0 Eval",
++      blurb:
++        "Evaluation harness exploring agent memory layers — recall quality, conflicts, and retrieval.",
++      visual: "helix",
++      tags: ["Python", "Memory", "Evals"],
++    },
++    {
++      repo: "langgraph-eval",
++      title: "LangGraph Eval",
++      blurb:
++        "Resilient multi-agent graph experiments with LangGraph for production-minded workflows.",
++      visual: "core",
++      tags: ["Python", "LangGraph", "Agents"],
++    },
++  ] satisfies FeaturedProject[],
+   about: {
+     title: "Engineering intelligent systems that ship to production.",
+     paragraphs: [

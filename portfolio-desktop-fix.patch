@@ -1,0 +1,262 @@
+diff --git a/src/app/globals.css b/src/app/globals.css
+index 0abbc38..9819fd2 100644
+--- a/src/app/globals.css
++++ b/src/app/globals.css
+@@ -95,29 +95,44 @@ body {
+   animation: fade-up 0.9s ease-out 0.45s both;
+ }
+ 
++.projects-section {
++  background:
++    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(34, 211, 238, 0.12), transparent 55%),
++    linear-gradient(180deg, #041018 0%, #0a2430 40%, #041018 100%);
++}
++
+ .project-visual {
+   isolation: isolate;
+ }
+ 
++.project-visual-frame {
++  background: linear-gradient(180deg, #245f73 0%, #1a4d5f 100%);
++}
++
+ .project-visual-glow {
+   position: absolute;
+   inset: 0;
+   background:
+-    radial-gradient(ellipse 75% 60% at 50% 42%, rgba(34, 211, 238, 0.42), transparent 62%),
+-    radial-gradient(ellipse 45% 40% at 78% 78%, rgba(251, 191, 36, 0.22), transparent 58%),
+-    linear-gradient(165deg, #0d2431 0%, #123445 55%, #0b1c28 100%);
++    radial-gradient(circle at 50% 45%, rgba(165, 243, 252, 0.55), transparent 55%),
++    radial-gradient(circle at 75% 70%, rgba(251, 191, 36, 0.28), transparent 50%),
++    linear-gradient(160deg, #2a6f84 0%, #1d5568 55%, #174858 100%);
+   pointer-events: none;
+ }
+ 
+ .project-visual-fallback {
+   background:
+-    radial-gradient(ellipse 75% 60% at 50% 42%, rgba(34, 211, 238, 0.35), transparent 62%),
+-    linear-gradient(165deg, #0d2431 0%, #123445 55%, #0b1c28 100%);
++    radial-gradient(circle at 50% 45%, rgba(165, 243, 252, 0.45), transparent 55%),
++    linear-gradient(160deg, #2a6f84 0%, #1d5568 55%, #174858 100%);
+ }
+ 
+ .project-visual-vignette {
+   background:
+-    linear-gradient(180deg, rgba(11, 28, 40, 0.05) 0%, rgba(11, 28, 40, 0.15) 70%, rgba(11, 28, 40, 0.55) 100%);
++    linear-gradient(
++      180deg,
++      rgba(26, 77, 95, 0) 0%,
++      rgba(26, 77, 95, 0.08) 65%,
++      rgba(18, 56, 70, 0.35) 100%
++    );
+ }
+ 
+ .project-card {
+diff --git a/src/components/ProjectScene.tsx b/src/components/ProjectScene.tsx
+index e9d48d9..d78f6e5 100644
+--- a/src/components/ProjectScene.tsx
++++ b/src/components/ProjectScene.tsx
+@@ -417,15 +417,15 @@ export function ProjectScene({ visual, active = true }: ProjectSceneProps) {
+       <div className="project-visual-glow" />
+       {visible && active ? (
+         <Canvas
+-          camera={{ position: [0, 0, 1.75], fov: 42 }}
+-          dpr={[1, 1.75]}
++          camera={{ position: [0, 0, 1.45], fov: 40 }}
++          dpr={[1, 2]}
+           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+-          style={{ background: "transparent" }}
++          style={{ background: "transparent", width: "100%", height: "100%" }}
+         >
+-          <ambientLight intensity={0.75} />
+-          <pointLight position={[2, 2, 3]} intensity={1.8} color="#67e8f9" />
+-          <pointLight position={[-2, -1, 2]} intensity={1.1} color="#fbbf24" />
+-          <group scale={1.2}>
++          <ambientLight intensity={1.05} />
++          <pointLight position={[2, 2, 3]} intensity={2.4} color="#ecfeff" />
++          <pointLight position={[-2, -1, 2]} intensity={1.6} color="#fde68a" />
++          <group scale={1.45} position={[0, 0.02, 0]}>
+             <VisualContent visual={visual} />
+           </group>
+         </Canvas>
+diff --git a/src/components/ProjectsSection.tsx b/src/components/ProjectsSection.tsx
+index a186a81..8b7efd9 100644
+--- a/src/components/ProjectsSection.tsx
++++ b/src/components/ProjectsSection.tsx
+@@ -93,53 +93,57 @@ function ProjectCard({ project }: { project: DisplayProject }) {
+       href={project.href}
+       target="_blank"
+       rel="noopener noreferrer"
+-      className="project-card group flex h-full flex-col overflow-hidden rounded-2xl border border-cyan-200/20 bg-[#0b1c28] transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/45 hover:bg-[#0e2433] hover:shadow-[0_18px_50px_rgba(8,145,178,0.22)]"
++      className="project-card group flex h-[430px] flex-col overflow-hidden rounded-2xl border border-cyan-200/35 bg-[#1a4d5f] shadow-[0_10px_40px_rgba(8,145,178,0.12)] transition-all duration-300 hover:-translate-y-1 hover:border-cyan-100/60 hover:bg-[#1f5a6e] hover:shadow-[0_18px_50px_rgba(34,211,238,0.28)] md:h-[450px]"
+     >
+-      <div className="relative h-44 w-full shrink-0 overflow-hidden border-b border-white/10 sm:h-48">
++      <div className="project-visual-frame relative h-[200px] w-full shrink-0 overflow-hidden border-b border-cyan-100/20 md:h-[220px]">
+         <ProjectScene visual={project.visual} />
+         <div className="project-visual-vignette pointer-events-none absolute inset-0" />
+         {project.featured && (
+-          <span className="absolute top-3 left-3 rounded-full border border-cyan-200/30 bg-[#041018]/70 px-3 py-1 text-[10px] tracking-[0.2em] text-cyan-200 uppercase backdrop-blur-sm">
++          <span className="absolute top-3 left-3 rounded-full border border-cyan-100/40 bg-[#0b2a36]/75 px-3 py-1 text-[10px] tracking-[0.2em] text-cyan-50 uppercase backdrop-blur-sm">
+             Featured
+           </span>
+         )}
+         <span
+           aria-hidden
+-          className="absolute top-3 right-3 text-white/50 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-cyan-200"
++          className="absolute top-3 right-3 text-cyan-50/70 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white"
+         >
+           ↗
+         </span>
+       </div>
+ 
+-      <div className="flex flex-1 flex-col p-5 md:p-6">
+-        <h3 className="font-serif text-xl text-white transition-colors group-hover:text-cyan-100">
++      <div className="flex min-h-0 flex-1 flex-col bg-[#123846] p-5 md:p-6">
++        <h3 className="font-serif text-[1.35rem] leading-tight text-white transition-colors group-hover:text-cyan-50">
+           {project.title}
+         </h3>
+ 
+-        <p className="mt-3 line-clamp-3 flex-1 text-sm leading-6 text-white/70">
++        <p className="mt-3 line-clamp-3 text-sm leading-6 text-cyan-50/80">
+           {project.blurb}
+         </p>
+ 
+-        <div className="mt-5 flex flex-wrap items-center gap-2">
+-          {project.tags.slice(0, 3).map((tag) => (
+-            <span
+-              key={tag}
+-              className="rounded-full border border-cyan-100/15 bg-white/5 px-3 py-1 text-[10px] tracking-[0.12em] text-cyan-50/75 uppercase"
+-            >
+-              {tag}
+-            </span>
+-          ))}
+-          {project.language && !project.tags.includes(project.language) && (
+-            <span className="rounded-full border border-cyan-100/15 bg-white/5 px-3 py-1 text-[10px] tracking-[0.12em] text-cyan-50/75 uppercase">
+-              {project.language}
+-            </span>
+-          )}
+-        </div>
++        <div className="mt-auto pt-5">
++          <div className="flex flex-wrap items-center gap-2">
++            {project.tags.slice(0, 3).map((tag) => (
++              <span
++                key={tag}
++                className="rounded-full border border-cyan-100/25 bg-cyan-50/10 px-3 py-1 text-[10px] tracking-[0.12em] text-cyan-50 uppercase"
++              >
++                {tag}
++              </span>
++            ))}
++            {project.language && !project.tags.includes(project.language) && (
++              <span className="rounded-full border border-cyan-100/25 bg-cyan-50/10 px-3 py-1 text-[10px] tracking-[0.12em] text-cyan-50 uppercase">
++                {project.language}
++              </span>
++            )}
++          </div>
+ 
+-        <div className="mt-4 flex items-center gap-4 text-[11px] tracking-[0.12em] text-white/45 uppercase">
+-          <span>★ {project.stars}</span>
+-          <span>Forks {project.forks}</span>
+-          {project.liveHref ? <span className="text-cyan-200/80">Live</span> : null}
++          <div className="mt-4 flex items-center gap-4 text-[11px] tracking-[0.12em] text-cyan-100/55 uppercase">
++            <span>★ {project.stars}</span>
++            <span>Forks {project.forks}</span>
++            {project.liveHref ? (
++              <span className="text-amber-200/90">Live</span>
++            ) : null}
++          </div>
+         </div>
+       </div>
+     </a>
+@@ -150,31 +154,34 @@ export function ProjectsSection({ repos }: ProjectsSectionProps) {
+   const { featured, more } = buildProjects(repos);
+ 
+   return (
+-    <section id="projects" className="relative px-6 py-24 md:px-10 md:py-32">
++    <section
++      id="projects"
++      className="projects-section relative px-6 py-24 md:px-10 md:py-32"
++    >
+       <div className="section-divider mx-auto mb-20 max-w-[1400px]" />
+       <div className="mx-auto max-w-[1400px]">
+         <div className="mb-14 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+           <div>
+-            <p className="mb-4 text-[11px] tracking-[0.28em] text-cyan-200/70 uppercase">
++            <p className="mb-4 text-[11px] tracking-[0.28em] text-cyan-200 uppercase">
+               GitHub Projects
+             </p>
+             <h2 className="font-serif text-3xl text-white md:text-4xl">
+               Visual systems from the lab
+             </h2>
+           </div>
+-          <p className="max-w-sm text-sm text-white/55">
+-            Featured builds with live 3D motifs — synced from GitHub and curated
+-            for clarity.
++          <p className="max-w-sm text-sm text-cyan-50/70">
++            Six featured builds in a fixed desktop grid — each with a live 3D
++            motif synced from GitHub.
+           </p>
+         </div>
+ 
+         {featured.length === 0 && more.length === 0 ? (
+-          <p className="text-sm text-white/55">
++          <p className="text-sm text-cyan-50/70">
+             No public repositories found. Check back soon.
+           </p>
+         ) : (
+           <>
+-            <div className="grid auto-rows-fr gap-5 sm:grid-cols-2 xl:grid-cols-3">
++            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+               {featured.map((project) => (
+                 <ProjectCard key={project.key} project={project} />
+               ))}
+@@ -183,19 +190,19 @@ export function ProjectsSection({ repos }: ProjectsSectionProps) {
+             {more.length > 0 && (
+               <div className="mt-16">
+                 <div className="mb-8 flex items-end justify-between gap-4">
+-                  <h3 className="font-serif text-2xl text-white/90">
++                  <h3 className="font-serif text-2xl text-white">
+                     More repositories
+                   </h3>
+                   <a
+                     href={siteConfig.social.github}
+                     target="_blank"
+                     rel="noopener noreferrer"
+-                    className="text-[11px] tracking-[0.18em] text-white/45 uppercase transition-colors hover:text-cyan-200"
++                    className="text-[11px] tracking-[0.18em] text-cyan-100/60 uppercase transition-colors hover:text-cyan-50"
+                   >
+                     View GitHub ↗
+                   </a>
+                 </div>
+-                <div className="grid auto-rows-fr gap-5 sm:grid-cols-2 xl:grid-cols-3">
++                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                   {more.map((project) => (
+                     <ProjectCard key={project.key} project={project} />
+                   ))}
+diff --git a/src/lib/site-config.ts b/src/lib/site-config.ts
+index df25ca7..2b8de3b 100644
+--- a/src/lib/site-config.ts
++++ b/src/lib/site-config.ts
+@@ -80,22 +80,6 @@ export const siteConfig = {
+       visual: "pulse",
+       tags: ["Python", "IoT", "Automation"],
+     },
+-    {
+-      repo: "mem0-eval",
+-      title: "Mem0 Eval",
+-      blurb:
+-        "Evaluation harness exploring agent memory layers — recall quality, conflicts, and retrieval.",
+-      visual: "helix",
+-      tags: ["Python", "Memory", "Evals"],
+-    },
+-    {
+-      repo: "langgraph-eval",
+-      title: "LangGraph Eval",
+-      blurb:
+-        "Resilient multi-agent graph experiments with LangGraph for production-minded workflows.",
+-      visual: "core",
+-      tags: ["Python", "LangGraph", "Agents"],
+-    },
+   ] satisfies FeaturedProject[],
+   about: {
+     title: "Engineering intelligent systems that ship to production.",
